@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f9f9f9;
+        }
+        .profile-container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #e63939;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <h2>Добро пожаловать, <span id="username"></span></h2>
+        <p>Дата регистрации: <span id="registrationDate"></span></p>
+        <button id="logoutButton">Выйти</button>
+    </div>
+
+    <script>
+        // Получение данных пользователя
+        async function loadProfile() {
+            try {
+                const response = await fetch('/profile');
+                if (!response.ok) {
+                    alert('Вы не авторизованы!');
+                    window.location.href = 'index.html';
+                    return;
+                }
+
+                const data = await response.json();
+                document.getElementById('username').textContent = data.username;
+                document.getElementById('registrationDate').textContent = new Date(data.registrationDate).toLocaleDateString();
+            } catch (error) {
+                console.error('Ошибка загрузки профиля:', error);
+                alert('Ошибка загрузки профиля');
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Функция выхода из аккаунта
+        document.getElementById('logoutButton').addEventListener('click', async () => {
+            try {
+                const response = await fetch('/logout', { method: 'POST' });
+                if (response.ok) {
+                    alert('Вы успешно вышли из аккаунта');
+                    window.location.href = 'index.html'; // Переход на страницу входа
+                } else {
+                    alert('Ошибка выхода');
+                }
+            } catch (error) {
+                console.error('Ошибка выхода:', error);
+            }
+        });
+
+        // Загрузить данные профиля при открытии страницы
+        loadProfile();
+    </script>
+</body>
+</html>
